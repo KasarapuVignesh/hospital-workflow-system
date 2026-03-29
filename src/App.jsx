@@ -1,18 +1,21 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-
-const Home = () => <h2>Home</h2>;
-const About = () => <h2>About</h2>;
-const Contact = () => <h2>Contact</h2>;
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useSupabaseClient } from '@supabase/supabase-js';
+import Login from './Login';
+import Dashboard from './Dashboard';
 
 const App = () => {
+  const supabase = useSupabaseClient();
+
+  const user = supabase.auth.user();
+
   return (
     <Router>
-      <Switch>
-        <Route path='/' exact component={Home} />
-        <Route path='/about' component={About} />
-        <Route path='/contact' component={Contact} />
-      </Switch>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/dashboard" element={user ? <Dashboard /> : <Navigate to="/login" />} />
+        <Route path="*" element={<Navigate to={user ? "/dashboard" : "/login"} />} />
+      </Routes>
     </Router>
   );
 };
